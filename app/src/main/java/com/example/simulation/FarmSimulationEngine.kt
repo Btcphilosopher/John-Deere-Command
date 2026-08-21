@@ -1,0 +1,703 @@
+package com.example.simulation
+
+import com.example.model.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlin.random.Random
+
+object FarmSimulationEngine {
+
+    fun initialMachines(): List<Machine> {
+        return listOf(
+            Machine(
+                id = "jd-8r410-01",
+                name = "JOHN DEERE 8R 410",
+                modelNumber = "8R 410",
+                category = MachineCategory.TRACTOR,
+                status = MachineStatus.WORKING,
+                fuelPercent = 72f,
+                speedKmH = 8.4f,
+                engineRpm = 1850,
+                engineLoadPercent = 64f,
+                hydraulicTempC = 78f,
+                latitude = 41.8781,
+                longitude = -93.0977,
+                headingDegrees = 45f,
+                currentFieldId = "field-12",
+                currentFieldName = "NORTH 12",
+                currentJobTitle = "TILLAGE — PASS 18/42",
+                operatorName = "James Miller",
+                implementAttached = "2680H High-Speed Disk",
+                productivityAcresPerHr = 14.2f,
+                acresCompletedToday = 148.5f,
+                totalMachineHours = 1240.5f,
+                isAutonomous = false,
+                connectivity = ConnectivityType.CELLULAR_5G,
+                connectivitySignalPercent = 95,
+                alertCount = 1,
+                healthPercent = 94f
+            ),
+            Machine(
+                id = "jd-x9-1100-01",
+                name = "JOHN DEERE X9 1100",
+                modelNumber = "X9 1100",
+                category = MachineCategory.COMBINE_HARVESTER,
+                status = MachineStatus.HARVESTING,
+                fuelPercent = 84f,
+                speedKmH = 6.2f,
+                engineRpm = 2100,
+                engineLoadPercent = 82f,
+                hydraulicTempC = 84f,
+                latitude = 41.8820,
+                longitude = -93.0910,
+                headingDegrees = 180f,
+                currentFieldId = "field-18",
+                currentFieldName = "SOUTH 18",
+                currentJobTitle = "CORN HARVEST — 180 BU/AC",
+                operatorName = "Sarah Jenkins",
+                implementAttached = "HD45F Draper Header",
+                productivityAcresPerHr = 18.6f,
+                acresCompletedToday = 210.0f,
+                totalMachineHours = 890.2f,
+                isAutonomous = false,
+                connectivity = ConnectivityType.GNSS_RTK,
+                connectivitySignalPercent = 98,
+                alertCount = 0,
+                healthPercent = 98f
+            ),
+            Machine(
+                id = "jd-8r370-auto",
+                name = "8R 370 AUTONOMOUS",
+                modelNumber = "8R 370",
+                category = MachineCategory.AUTONOMOUS_UNIT,
+                status = MachineStatus.WORKING,
+                fuelPercent = 68f,
+                speedKmH = 7.8f,
+                engineRpm = 1750,
+                engineLoadPercent = 58f,
+                hydraulicTempC = 74f,
+                latitude = 41.8745,
+                longitude = -93.1020,
+                headingDegrees = 270f,
+                currentFieldId = "field-14",
+                currentFieldName = "EAST 14",
+                currentJobTitle = "AUTONOMOUS DEEP CULTIVATION",
+                operatorName = "SUPERVISED (ROBOTIC)",
+                implementAttached = "2730 Combination Ripper",
+                productivityAcresPerHr = 12.8f,
+                acresCompletedToday = 112.4f,
+                totalMachineHours = 640.0f,
+                isAutonomous = true,
+                connectivity = ConnectivityType.JDLINK_CLOUD,
+                connectivitySignalPercent = 92,
+                alertCount = 0,
+                healthPercent = 96f
+            ),
+            Machine(
+                id = "jd-r4045-01",
+                name = "JOHN DEERE R4045",
+                modelNumber = "R4045",
+                category = MachineCategory.SPRAYER,
+                status = MachineStatus.WORKING,
+                fuelPercent = 61f,
+                speedKmH = 18.5f,
+                engineRpm = 1950,
+                engineLoadPercent = 45f,
+                hydraulicTempC = 72f,
+                latitude = 41.8890,
+                longitude = -93.0850,
+                headingDegrees = 90f,
+                currentFieldId = "field-19",
+                currentFieldName = "RIDGE 19",
+                currentJobTitle = "PRECISION LIQUID NITROGEN",
+                operatorName = "David Vance",
+                implementAttached = "120ft Carbon Fiber Boom",
+                productivityAcresPerHr = 42.0f,
+                acresCompletedToday = 310.8f,
+                totalMachineHours = 1520.1f,
+                isAutonomous = false,
+                connectivity = ConnectivityType.CELLULAR_5G,
+                connectivitySignalPercent = 88,
+                alertCount = 1,
+                healthPercent = 91f
+            ),
+            Machine(
+                id = "jd-9rx640-01",
+                name = "JOHN DEERE 9RX 640",
+                modelNumber = "9RX 640",
+                category = MachineCategory.TRACTOR,
+                status = MachineStatus.STANDBY,
+                fuelPercent = 92f,
+                speedKmH = 0.0f,
+                engineRpm = 800,
+                engineLoadPercent = 12f,
+                hydraulicTempC = 52f,
+                latitude = 41.8700,
+                longitude = -93.0950,
+                headingDegrees = 0f,
+                currentFieldId = "field-09",
+                currentFieldName = "PRAIRIE 09",
+                currentJobTitle = "HEAVY DISK HARROWING - PENDING",
+                operatorName = "Mark Taylor",
+                implementAttached = "2633VT Vertical Tillage",
+                productivityAcresPerHr = 0.0f,
+                acresCompletedToday = 0.0f,
+                totalMachineHours = 2100.8f,
+                isAutonomous = false,
+                connectivity = ConnectivityType.GNSS_RTK,
+                connectivitySignalPercent = 100,
+                alertCount = 0,
+                healthPercent = 95f
+            ),
+            Machine(
+                id = "jd-s780-02",
+                name = "JOHN DEERE S780",
+                modelNumber = "S780",
+                category = MachineCategory.COMBINE_HARVESTER,
+                status = MachineStatus.WORKING,
+                fuelPercent = 54f,
+                speedKmH = 5.8f,
+                engineRpm = 2050,
+                engineLoadPercent = 78f,
+                hydraulicTempC = 81f,
+                latitude = 41.8920,
+                longitude = -93.0780,
+                headingDegrees = 315f,
+                currentFieldId = "field-22",
+                currentFieldName = "VALLEY 22",
+                currentJobTitle = "SOYBEAN HARVEST",
+                operatorName = "Lisa Ray",
+                implementAttached = "730FD Flex Draper",
+                productivityAcresPerHr = 15.1f,
+                acresCompletedToday = 162.0f,
+                totalMachineHours = 1140.4f,
+                isAutonomous = false,
+                connectivity = ConnectivityType.ISOBUS_CLASS_3,
+                connectivitySignalPercent = 90,
+                alertCount = 0,
+                healthPercent = 92f
+            ),
+            Machine(
+                id = "jd-1775nt-01",
+                name = "JOHN DEERE 1775NT",
+                modelNumber = "1775NT 24R30",
+                category = MachineCategory.PLANTER_SEEDER,
+                status = MachineStatus.WORKING,
+                fuelPercent = 79f,
+                speedKmH = 9.2f,
+                engineRpm = 1800,
+                engineLoadPercent = 52f,
+                hydraulicTempC = 68f,
+                latitude = 41.8680,
+                longitude = -93.1100,
+                headingDegrees = 135f,
+                currentFieldId = "field-03",
+                currentFieldName = "WEST 03",
+                currentJobTitle = "EXACTEMERGE CORN PLANTING",
+                operatorName = "Brian Cole",
+                implementAttached = "24-Row ExactEmerge Planter",
+                productivityAcresPerHr = 22.4f,
+                acresCompletedToday = 198.2f,
+                totalMachineHours = 450.3f,
+                isAutonomous = false,
+                connectivity = ConnectivityType.GNSS_RTK,
+                connectivitySignalPercent = 96,
+                alertCount = 0,
+                healthPercent = 99f
+            ),
+            Machine(
+                id = "jd-hagie-01",
+                name = "HAGIE STS16 SPRAYER",
+                modelNumber = "STS16",
+                category = MachineCategory.SPRAYER,
+                status = MachineStatus.MAINTENANCE,
+                fuelPercent = 40f,
+                speedKmH = 0.0f,
+                engineRpm = 0,
+                engineLoadPercent = 0f,
+                hydraulicTempC = 25f,
+                latitude = 41.8750,
+                longitude = -93.0900,
+                headingDegrees = 0f,
+                currentFieldId = "field-shop",
+                currentFieldName = "MAIN SHOP YARD",
+                currentJobTitle = "HYDRAULIC HOSE INSPECTION",
+                operatorName = "Tech: Carlos Ruiz",
+                implementAttached = "132ft Aluminum Boom",
+                productivityAcresPerHr = 0.0f,
+                acresCompletedToday = 0.0f,
+                totalMachineHours = 1890.0f,
+                isAutonomous = false,
+                connectivity = ConnectivityType.JDLINK_CLOUD,
+                connectivitySignalPercent = 85,
+                alertCount = 2,
+                healthPercent = 76f
+            ),
+            Machine(
+                id = "jd-gator-01",
+                name = "GATOR XUV835M",
+                modelNumber = "XUV835M",
+                category = MachineCategory.MOWER_UTILITY,
+                status = MachineStatus.TRANSIT,
+                fuelPercent = 88f,
+                speedKmH = 24.0f,
+                engineRpm = 3200,
+                engineLoadPercent = 30f,
+                hydraulicTempC = 60f,
+                latitude = 41.8810,
+                longitude = -93.0960,
+                headingDegrees = 210f,
+                currentFieldId = "field-12",
+                currentFieldName = "NORTH 12",
+                currentJobTitle = "FIELD BOUNDARY SCOUTING",
+                operatorName = "Tom Hansen",
+                implementAttached = "Soil Moisture Probe Array",
+                productivityAcresPerHr = 0.0f,
+                acresCompletedToday = 0.0f,
+                totalMachineHours = 320.0f,
+                isAutonomous = false,
+                connectivity = ConnectivityType.CELLULAR_5G,
+                connectivitySignalPercent = 94,
+                alertCount = 0,
+                healthPercent = 97f
+            ),
+            Machine(
+                id = "jd-8r410-auto-02",
+                name = "8R 410 AUTONOMOUS 2",
+                modelNumber = "8R 410 Auto",
+                category = MachineCategory.AUTONOMOUS_UNIT,
+                status = MachineStatus.WORKING,
+                fuelPercent = 65f,
+                speedKmH = 8.1f,
+                engineRpm = 1820,
+                engineLoadPercent = 62f,
+                hydraulicTempC = 76f,
+                latitude = 41.8795,
+                longitude = -93.0988,
+                headingDegrees = 45f,
+                currentFieldId = "field-12",
+                currentFieldName = "NORTH 12",
+                currentJobTitle = "PARALLEL STRIP TILLAGE",
+                operatorName = "SUPERVISED (AUTONOMOUS)",
+                implementAttached = "2510H Anhydrous Applicator",
+                productivityAcresPerHr = 13.8f,
+                acresCompletedToday = 135.0f,
+                totalMachineHours = 510.5f,
+                isAutonomous = true,
+                connectivity = ConnectivityType.GNSS_RTK,
+                connectivitySignalPercent = 97,
+                alertCount = 0,
+                healthPercent = 98f
+            ),
+            Machine(
+                id = "jd-6155r-01",
+                name = "JOHN DEERE 6155R",
+                modelNumber = "6155R",
+                category = MachineCategory.TRACTOR,
+                status = MachineStatus.STANDBY,
+                fuelPercent = 95f,
+                speedKmH = 0.0f,
+                engineRpm = 0,
+                engineLoadPercent = 0f,
+                hydraulicTempC = 20f,
+                latitude = 41.8755,
+                longitude = -93.0895,
+                headingDegrees = 0f,
+                currentFieldId = "field-yard",
+                currentFieldName = "EQUIPMENT SHED 2",
+                currentJobTitle = "STANDBY UTILITY",
+                operatorName = "Unassigned",
+                implementAttached = "Front Loader 640R",
+                productivityAcresPerHr = 0.0f,
+                acresCompletedToday = 12.0f,
+                totalMachineHours = 3100.0f,
+                isAutonomous = false,
+                connectivity = ConnectivityType.JDLINK_CLOUD,
+                connectivitySignalPercent = 89,
+                alertCount = 0,
+                healthPercent = 93f
+            ),
+            Machine(
+                id = "jd-n540ft-01",
+                name = "JOHN DEERE N540FT",
+                modelNumber = "N540FT Air Seeder",
+                category = MachineCategory.PLANTER_SEEDER,
+                status = MachineStatus.WORKING,
+                fuelPercent = 71f,
+                speedKmH = 11.0f,
+                engineRpm = 1900,
+                engineLoadPercent = 60f,
+                hydraulicTempC = 70f,
+                latitude = 41.8850,
+                longitude = -93.1050,
+                headingDegrees = 180f,
+                currentFieldId = "field-11",
+                currentFieldName = "NORTH 11",
+                currentJobTitle = "WINTER WHEAT SEEDING",
+                operatorName = "Alex Rivera",
+                implementAttached = "C850 Air Cart",
+                productivityAcresPerHr = 28.5f,
+                acresCompletedToday = 240.0f,
+                totalMachineHours = 780.2f,
+                isAutonomous = false,
+                connectivity = ConnectivityType.ISOBUS_CLASS_3,
+                connectivitySignalPercent = 93,
+                alertCount = 0,
+                healthPercent = 96f
+            ),
+            Machine(
+                id = "jd-db60-01",
+                name = "JOHN DEERE DB60",
+                modelNumber = "DB60 36R30",
+                category = MachineCategory.PLANTER_SEEDER,
+                status = MachineStatus.STANDBY,
+                fuelPercent = 100f,
+                speedKmH = 0.0f,
+                engineRpm = 0,
+                engineLoadPercent = 0f,
+                hydraulicTempC = 18f,
+                latitude = 41.8748,
+                longitude = -93.0888,
+                headingDegrees = 90f,
+                currentFieldId = "field-shop",
+                currentFieldName = "MAIN SHOP YARD",
+                currentJobTitle = "CALIBRATION STANDBY",
+                operatorName = "Unassigned",
+                implementAttached = "36-Row Bulk Fill Planter",
+                productivityAcresPerHr = 0.0f,
+                acresCompletedToday = 0.0f,
+                totalMachineHours = 380.0f,
+                isAutonomous = false,
+                connectivity = ConnectivityType.JDLINK_CLOUD,
+                connectivitySignalPercent = 91,
+                alertCount = 0,
+                healthPercent = 100f
+            ),
+            Machine(
+                id = "jd-8r340-01",
+                name = "JOHN DEERE 8R 340",
+                modelNumber = "8R 340",
+                category = MachineCategory.TRACTOR,
+                status = MachineStatus.WORKING,
+                fuelPercent = 82f,
+                speedKmH = 14.0f,
+                engineRpm = 1700,
+                engineLoadPercent = 48f,
+                hydraulicTempC = 69f,
+                latitude = 41.8830,
+                longitude = -93.0900,
+                headingDegrees = 270f,
+                currentFieldId = "field-18",
+                currentFieldName = "SOUTH 18",
+                currentJobTitle = "GRAIN CART SUPPORT FOR X9",
+                operatorName = "Ethan Hunt",
+                implementAttached = "Brent 1196 Grain Cart",
+                productivityAcresPerHr = 0.0f,
+                acresCompletedToday = 180.0f,
+                totalMachineHours = 920.0f,
+                isAutonomous = false,
+                connectivity = ConnectivityType.CELLULAR_5G,
+                connectivitySignalPercent = 96,
+                alertCount = 0,
+                healthPercent = 97f
+            )
+        )
+    }
+
+    fun initialFields(): List<Field> {
+        return listOf(
+            Field(
+                id = "field-12",
+                name = "NORTH 12",
+                totalAcres = 240f,
+                cropType = "Corn",
+                boundaryPoints = listOf(
+                    LatLngPoint(41.876, -93.100),
+                    LatLngPoint(41.882, -93.100),
+                    LatLngPoint(41.882, -93.094),
+                    LatLngPoint(41.876, -93.094)
+                ),
+                guidanceLinesCount = 42,
+                soilPh = 6.8f,
+                soilMoisturePercent = 28.5f,
+                avgYieldBushelsPerAcre = 210.5f,
+                completionPercent = 72f,
+                hazardsCount = 1,
+                assignedMachineId = "jd-8r410-01"
+            ),
+            Field(
+                id = "field-18",
+                name = "SOUTH 18",
+                totalAcres = 320f,
+                cropType = "Corn",
+                boundaryPoints = listOf(
+                    LatLngPoint(41.880, -93.092),
+                    LatLngPoint(41.886, -93.092),
+                    LatLngPoint(41.886, -93.084),
+                    LatLngPoint(41.880, -93.084)
+                ),
+                guidanceLinesCount = 68,
+                soilPh = 6.5f,
+                soilMoisturePercent = 24.0f,
+                avgYieldBushelsPerAcre = 228.0f,
+                completionPercent = 84f,
+                hazardsCount = 0,
+                assignedMachineId = "jd-x9-1100-01"
+            ),
+            Field(
+                id = "field-14",
+                name = "EAST 14",
+                totalAcres = 180f,
+                cropType = "Soybeans",
+                boundaryPoints = listOf(
+                    LatLngPoint(41.872, -93.105),
+                    LatLngPoint(41.877, -93.105),
+                    LatLngPoint(41.877, -93.098),
+                    LatLngPoint(41.872, -93.098)
+                ),
+                guidanceLinesCount = 36,
+                soilPh = 6.9f,
+                soilMoisturePercent = 31.0f,
+                avgYieldBushelsPerAcre = 68.2f,
+                completionPercent = 55f,
+                hazardsCount = 0,
+                assignedMachineId = "jd-8r370-auto"
+            ),
+            Field(
+                id = "field-19",
+                name = "RIDGE 19",
+                totalAcres = 410f,
+                cropType = "Corn",
+                boundaryPoints = listOf(
+                    LatLngPoint(41.885, -93.088),
+                    LatLngPoint(41.892, -93.088),
+                    LatLngPoint(41.892, -93.080),
+                    LatLngPoint(41.885, -93.080)
+                ),
+                guidanceLinesCount = 80,
+                soilPh = 6.4f,
+                soilMoisturePercent = 22.0f,
+                avgYieldBushelsPerAcre = 205.0f,
+                completionPercent = 61f,
+                hazardsCount = 2,
+                assignedMachineId = "jd-r4045-01"
+            )
+        )
+    }
+
+    fun initialJobs(): List<Job> {
+        return listOf(
+            Job(
+                id = "job-101",
+                title = "SPRING TILLAGE PASS 1",
+                type = JobType.TILLAGE,
+                fieldId = "field-12",
+                fieldName = "NORTH 12",
+                machineId = "jd-8r410-01",
+                machineName = "8R 410",
+                implementName = "2680H High-Speed Disk",
+                operatorName = "James Miller",
+                targetRate = "14.0 Acres/Hr",
+                progressPercent = 72f,
+                status = JobStatus.ACTIVE,
+                startTime = "07:30 AM",
+                estEndTime = "04:30 PM",
+                acresTarget = 240f,
+                acresCompleted = 172.8f
+            ),
+            Job(
+                id = "job-102",
+                title = "HIGH-YIELD CORN HARVEST",
+                type = JobType.HARVESTING,
+                fieldId = "field-18",
+                fieldName = "SOUTH 18",
+                machineId = "jd-x9-1100-01",
+                machineName = "X9 1100",
+                implementName = "HD45F Draper Header",
+                operatorName = "Sarah Jenkins",
+                targetRate = "18.5 Acres/Hr",
+                progressPercent = 84f,
+                status = JobStatus.ACTIVE,
+                startTime = "06:00 AM",
+                estEndTime = "06:00 PM",
+                acresTarget = 320f,
+                acresCompleted = 268.8f
+            ),
+            Job(
+                id = "job-103",
+                title = "AUTONOMOUS DEEP RIPPING",
+                type = JobType.TILLAGE,
+                fieldId = "field-14",
+                fieldName = "EAST 14",
+                machineId = "jd-8r370-auto",
+                machineName = "8R 370 AUTO",
+                implementName = "2730 Ripper",
+                operatorName = "Autonomous System",
+                targetRate = "12.5 Acres/Hr",
+                progressPercent = 55f,
+                status = JobStatus.ACTIVE,
+                startTime = "08:00 AM",
+                estEndTime = "05:00 PM",
+                acresTarget = 180f,
+                acresCompleted = 99.0f
+            ),
+            Job(
+                id = "job-104",
+                title = "NITROGEN SIDEDRESS APPLICATION",
+                type = JobType.SPRAYING,
+                fieldId = "field-19",
+                fieldName = "RIDGE 19",
+                machineId = "jd-r4045-01",
+                machineName = "R4045 SPRAYER",
+                implementName = "120ft Boom",
+                operatorName = "David Vance",
+                targetRate = "40.0 Gallons/Acre",
+                progressPercent = 61f,
+                status = JobStatus.ACTIVE,
+                startTime = "09:00 AM",
+                estEndTime = "03:00 PM",
+                acresTarget = 410f,
+                acresCompleted = 250.1f
+            )
+        )
+    }
+
+    fun initialAlerts(): List<AlertItem> {
+        return listOf(
+            AlertItem(
+                id = "alert-01",
+                severity = AlertSeverity.WARNING,
+                title = "HYDRAULIC OIL TEMP HIGH (78°C)",
+                description = "8R 410 hydraulic manifold temperature elevated under heavy disk draft load. Monitor cooling fan.",
+                machineId = "jd-8r410-01",
+                machineName = "8R 410",
+                timestamp = "2 mins ago",
+                dtcCode = "DTC ECU 000108.02",
+                isAcknowledged = false
+            ),
+            AlertItem(
+                id = "alert-02",
+                severity = AlertSeverity.CRITICAL,
+                title = "BOOM PRESSURE DROP DETECTED",
+                description = "Hagie STS16 Section 3 pressure dropped below 15 PSI. Check supply valve or filter clog.",
+                machineId = "jd-hagie-01",
+                machineName = "HAGIE STS16",
+                timestamp = "5 mins ago",
+                dtcCode = "DTC SPRAY 002100.01",
+                isAcknowledged = false
+            ),
+            AlertItem(
+                id = "alert-03",
+                severity = AlertSeverity.INFO,
+                title = "PASS 18 COMPLETED SUCCESSFULLY",
+                description = "8R 410 completed Field 12 North Pass 18/42. Guidance line auto-switched to Pass 19.",
+                machineId = "jd-8r410-01",
+                machineName = "8R 410",
+                timestamp = "12 mins ago",
+                dtcCode = null,
+                isAcknowledged = true
+            ),
+            AlertItem(
+                id = "alert-04",
+                severity = AlertSeverity.INFO,
+                title = "GNSS RTK CORRECTION LOCKED (1.2cm)",
+                description = "8R 370 Autonomous locked dual-antenna RTK precision positioning.",
+                machineId = "jd-8r370-auto",
+                machineName = "8R 370 AUTO",
+                timestamp = "25 mins ago",
+                dtcCode = null,
+                isAcknowledged = true
+            )
+        )
+    }
+
+    fun initialMaintenance(): List<MaintenanceItem> {
+        return listOf(
+            MaintenanceItem(
+                id = "maint-01",
+                machineId = "jd-8r410-01",
+                machineName = "8R 410",
+                componentName = "Engine Oil & Filter Change",
+                remainingHours = 72f,
+                intervalHours = 500f,
+                status = ServiceStatus.OK,
+                assignedTechnician = "Carlos Ruiz",
+                lastServicedDate = "Aug 02, 2026"
+            ),
+            MaintenanceItem(
+                id = "maint-02",
+                machineId = "jd-8r410-01",
+                machineName = "8R 410",
+                componentName = "Hydraulic Return Filters",
+                remainingHours = 18f,
+                intervalHours = 1000f,
+                status = ServiceStatus.DUE_SOON,
+                assignedTechnician = "Carlos Ruiz",
+                lastServicedDate = "May 14, 2026"
+            ),
+            MaintenanceItem(
+                id = "maint-03",
+                machineId = "jd-hagie-01",
+                machineName = "HAGIE STS16",
+                componentName = "Sprayer Strainers & Boom Valve",
+                remainingHours = 0f,
+                intervalHours = 250f,
+                status = ServiceStatus.OVERDUE,
+                assignedTechnician = "Carlos Ruiz",
+                lastServicedDate = "Jun 10, 2026"
+            ),
+            MaintenanceItem(
+                id = "maint-04",
+                machineId = "jd-x9-1100-01",
+                machineName = "X9 1100",
+                componentName = "Threshing Rotor Wear Liners",
+                remainingHours = 120f,
+                intervalHours = 750f,
+                status = ServiceStatus.OK,
+                assignedTechnician = "Mark Miller",
+                lastServicedDate = "Jul 20, 2026"
+            )
+        )
+    }
+
+    fun initialHotspots(): List<HotspotComponent> {
+        return listOf(
+            HotspotComponent("hs-eng", "13.6L PowerTech Dual Turbo Engine", "Engine", 96, 82f, 65f, 0.35f, 0.25f, "Normal Operating Temp", false),
+            HotspotComponent("hs-hyd", "Closed-Center Load Sensing Hydraulics", "Hydraulics", 88, 78f, 2900f, 0.75f, 0.65f, "High Flow Load (78°C)", true),
+            HotspotComponent("hs-cab", "CommandView 4 Luxury Cab & G5Plus Display", "Cab", 99, 21f, null, 0.55f, 0.25f, "Comfort Climate Active", false),
+            HotspotComponent("hs-pwr", "eAutoPowr Electric-CVT Transmission", "Power Train", 95, 68f, 180f, 0.60f, 0.65f, "Power Distribution Optimal", false),
+            HotspotComponent("hs-imp", "Category 4N/3 Heavy 3-Point Hitch", "Implement", 92, null, 3200f, 0.85f, 0.65f, "Draft Control Active", false)
+        )
+    }
+
+    // Creates a continuous simulation stream flow updating telemetry
+    fun simulationStream(currentList: List<Machine>): Flow<List<Machine>> = flow {
+        var machines = currentList
+        while (true) {
+            delay(1500) // Update every 1.5s
+            machines = machines.map { m ->
+                if (m.status == MachineStatus.WORKING || m.status == MachineStatus.HARVESTING || m.status == MachineStatus.TRANSIT) {
+                    val speedDelta = (Random.nextFloat() - 0.48f) * 0.2f
+                    val newSpeed = (m.speedKmH + speedDelta).coerceIn(4.0f, 35.0f)
+                    val fuelDecrease = 0.005f + Random.nextFloat() * 0.005f
+                    val newFuel = (m.fuelPercent - fuelDecrease).coerceIn(0f, 100f)
+                    val newAcres = m.acresCompletedToday + (newSpeed * 0.003f)
+                    val latDelta = (Random.nextDouble() - 0.5) * 0.00008
+                    val lngDelta = (Random.nextDouble() - 0.5) * 0.00008
+                    m.copy(
+                        speedKmH = (newSpeed * 10).toInt() / 10f,
+                        fuelPercent = (newFuel * 10).toInt() / 10f,
+                        acresCompletedToday = (newAcres * 10).toInt() / 10f,
+                        latitude = m.latitude + latDelta,
+                        longitude = m.longitude + lngDelta,
+                        engineLoadPercent = ((m.engineLoadPercent + (Random.nextFloat() - 0.5f) * 2f)).coerceIn(30f, 95f)
+                    )
+                } else {
+                    m
+                }
+            }
+            emit(machines)
+        }
+    }
+}
